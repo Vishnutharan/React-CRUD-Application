@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request, response } from "express";
 import mongoose from "mongoose";
 import { PORT, mongoDBURL } from "./config.js";
 import { Book } from './models/bookModel.js';
@@ -59,6 +59,47 @@ app.get('/books/:id', async (request, response) => {
             return response.status(404).send({ message: 'Book not found' });
         }
         return response.status(200).json(book);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+//Route for update
+app.put('/books/:id', async (request, response) => {
+    try {
+        if (
+            !request.body.title ||
+            !request.body.author ||
+            !request.body.publishYear
+        ) {
+            return response.status(400).send({
+                message: 'send all the requires fields: title, author, publishYear'
+            });
+        }
+        const { id } = request.params;
+        const result = await Book.findByIdAndUpdate(id, request.body);
+        if (!result) {
+            return response.status(404).json({ message: 'book not found' });
+        }
+        return response.status(200).send({ message: 'Booking update succesfully' })
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+
+// Route for Delete a book
+app.delete('/books/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const result = await Book.findByIdAndDelete(id);
+        if (!result) {
+            return response.status(404).json({ message: 'Book not found' });
+        }
+        return response.status(200).send({ message: 'Book deleted successfully' });
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });
