@@ -1,18 +1,15 @@
 import express from "express";
-import { PORT, mongoDBURL } from "./config.js";
 import mongoose from "mongoose";
-import { Book } from './models/bookModel.js'
+import { PORT, mongoDBURL } from "./config.js";
+import { Book } from './models/bookModel.js';
 
-
-// import config from "./config.js";
 const app = express();
 app.use(express.json());
 
 app.get('/', (request, response) => {
     console.log(request);
-    return response.status(234).send('Welcome To MERN Stack Tutorial');
+    return response.status(200).send('Welcome To MERN Stack Tutorial');
 });
-
 
 // Route for save new book
 app.post('/books', async (request, response) => {
@@ -32,20 +29,50 @@ app.post('/books', async (request, response) => {
             publishYear: request.body.publishYear,
         };
         const book = await Book.create(newBook);
-        // return response.status(201).send(book);
-
+        return response.status(201).send(book);
     } catch (error) {
         console.log(error.message);
-        response.status.apply(500).send({ message: error.message });
+        response.status(500).send({ message: error.message });
     }
 });
 
-mongoose.connect(mongoDBURL).then(() => {
-    console.log('App Connected to database');
-    app.listen(PORT, () => {
-        console.log(`App is listening to port: ${PORT}`);
-    });
-})
+// Route to get all books
+app.get('/books', async (request, response) => {
+    try {
+        const books = await Book.find({});
+        return response.status(200).json({
+            count: books.length,
+            data: books
+        });
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+// Route to get a book by ID
+app.get('/books/:id', async (request, response) => {
+    try {
+        const { id } = request.params;
+        const book = await Book.findById(id);
+        if (!book) {
+            return response.status(404).send({ message: 'Book not found' });
+        }
+        return response.status(200).json(book);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send({ message: error.message });
+    }
+});
+
+// Connect to MongoDB and start the server
+mongoose.connect(mongoDBURL)
+    .then(() => {
+        console.log('App connected to database');
+        app.listen(PORT, () => {
+            console.log(`App is listening on port: ${PORT}`);
+        });
+    })
     .catch((error) => {
         console.log(error);
     });
