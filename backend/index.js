@@ -1,17 +1,18 @@
-import express, { request, response } from "express";
+import express from "express";
 import mongoose from "mongoose";
 import { PORT, mongoDBURL } from "./config.js";
 import { Book } from './models/bookModel.js';
-import booksRoute from './routes/booksRoute.js';
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
+
 // Use cors middleware
-// app.use(cors({
-//     origin: 'http://localhost:3000',
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type']
-// }));
+app.use(cors({
+    origin: 'http://localhost:5173',  // Update the origin to match your frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
 
 app.get('/', (request, response) => {
     console.log(request);
@@ -27,7 +28,7 @@ app.post('/books', async (request, response) => {
             !request.body.publishYear
         ) {
             return response.status(400).send({
-                message: 'send all the requires fields: title, author, publishYear'
+                message: 'send all the required fields: title, author, publishYear'
             });
         }
         const newBook = {
@@ -72,7 +73,7 @@ app.get('/books/:id', async (request, response) => {
     }
 });
 
-//Route for update
+// Route for update
 app.put('/books/:id', async (request, response) => {
     try {
         if (
@@ -81,24 +82,22 @@ app.put('/books/:id', async (request, response) => {
             !request.body.publishYear
         ) {
             return response.status(400).send({
-                message: 'send all the requires fields: title, author, publishYear'
+                message: 'send all the required fields: title, author, publishYear'
             });
         }
         const { id } = request.params;
-        const result = await Book.findByIdAndUpdate(id, request.body);
+        const result = await Book.findByIdAndUpdate(id, request.body, { new: true });
         if (!result) {
             return response.status(404).json({ message: 'book not found' });
         }
-        return response.status(200).send({ message: 'Booking update succesfully' })
-
+        return response.status(200).send({ message: 'Booking update successfully' });
     } catch (error) {
         console.log(error.message);
         response.status(500).send({ message: error.message });
     }
 });
 
-
-// Route for Delete a book
+// Route to delete a book
 app.delete('/books/:id', async (request, response) => {
     try {
         const { id } = request.params;
