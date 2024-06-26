@@ -23,7 +23,7 @@ function Home() {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.error('Error fetching books:', error);
         setLoading(false);
       });
   }, []);
@@ -33,19 +33,29 @@ function Home() {
   };
 
   return (
-    <div className='p-4'>
-      <div className='flex justify-center item-center gap-x-4'>
-        <button className='bg-sky-300 hover:bg-sky-600 px-4 py-1 rounded-lg' onClick={() => handleShowType('card')}>
+    <div className="p-4">
+      <div className="flex justify-center items-center gap-x-4 mb-4">
+        <button
+          className={`px-4 py-1 rounded-lg ${
+            showType === 'card' ? 'bg-sky-600 text-white' : 'bg-sky-300 hover:bg-sky-600'
+          }`}
+          onClick={() => handleShowType('card')}
+        >
           Card
         </button>
-        <button className='bg-sky-300 hover:bg-sky-600 px-4 py-1 rounded-lg' onClick={() => handleShowType('table')}>
+        <button
+          className={`px-4 py-1 rounded-lg ${
+            showType === 'table' ? 'bg-sky-600 text-white' : 'bg-sky-300 hover:bg-sky-600'
+          }`}
+          onClick={() => handleShowType('table')}
+        >
           Table
         </button>
       </div>
-      <div className='flex justify-between items-center'>
-        <h1 className='text-3xl my-8'>Books List</h1>
-        <Link to='/books/create'>
-          <MdOutlineAddBox className='text-sky-800 text-4xl' />
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl">Books List</h1>
+        <Link to="/books/create">
+          <MdOutlineAddBox className="text-sky-800 text-4xl hover:text-sky-600 transition duration-300" />
         </Link>
       </div>
       {loading ? (
