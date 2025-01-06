@@ -23,9 +23,9 @@ const BookTable = ({ books }) => {
               <td colSpan="5" className="text-center py-4 text-gray-500">No Books Found</td>
             </tr>
           )}
-          {books.map((book, index) => (
+          {books.map((book,index) => (
             <tr key={book._id} className='border-b border-gray-300'>
-              <td className='border border-gray-300 px-4 py-2 text-sm text-center'>{index + 1}</td>
+              <td className='border border-gray-300 px-4 py-2 text-sm text-center'>{ index + 1}</td>
               <td className='border border-gray-300 px-4 py-2 text-sm'>{book.title}</td>
               <td className='border border-gray-300 px-4 py-2 text-sm hidden md:table-cell'>{book.author}</td>
               <td className='border border-gray-300 px-4 py-2 text-sm hidden md:table-cell'>{book.publishYear}</td>
